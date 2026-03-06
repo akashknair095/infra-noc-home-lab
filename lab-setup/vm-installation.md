@@ -51,6 +51,19 @@ VirtualBox
 
 ---
 
+## Environment Proof
+
+### Virtual Machine Overview
+
+![VirtualBox VM Overview](../assets/screenshots/lab-setup/virtualbox-vm-overview.png)
+
+### Ubuntu Server Information
+
+![Ubuntu Server Info](../assets/screenshots/lab-setup/ubuntu-server-info.png)
+
+
+---
+
 ## Next Steps
 - Implement system monitoring validation.
 - Begin service failure simulation.
