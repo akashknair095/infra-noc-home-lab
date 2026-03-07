@@ -8,6 +8,8 @@ The Nginx web service was intentionally stopped to simulate a service outage sce
 ## Detection
 - `systemctl status nginx` showed: inactive (dead)
 
+The following output confirms that the nginx service was inactive during the simulated outage.
+
 ### Service Status – Inactive
 
 ![Nginx Stopped](../assets/screenshots/day-2/day-2-nginx-stopped.png)
@@ -27,11 +29,14 @@ HTTP requests failed.
 Verified service status using systemctl.
 Checked listening ports using ss.
 
+The output below confirms that Port 80 was not listening during the simulated outage.
+
 ### Port 80 Not Listening
 
 ![Port 80 Check](../assets/screenshots/day-2/day-2-port-check.png)
 
 Reviewed logs using:
+
 sudo journalctl -u nginx --no-pager
 
 No configuration errors found.
@@ -50,6 +55,8 @@ sudo systemctl start nginx
 Verified service restoration:
 - systemctl status → active (running)
 - curl localhost → Welcome page displayed
+
+The output below confirms that nginx returned to an active (running) state after the restart.
 
 ### Service Restored
 
