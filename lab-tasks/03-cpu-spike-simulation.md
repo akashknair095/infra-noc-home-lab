@@ -16,6 +16,10 @@ top
 - No abnormal processes
 - System operating normally
 
+### Baseline Snapshot
+
+![Baseline CPU State](../assets/screenshots/day-3/day-3-baseline.png)
+
 ### Interpretation
 The system was in a healthy state with no performance issues. This baseline confirms normal server behavior before simulating the CPU incident.
 
@@ -34,6 +38,10 @@ yes > /dev/null (executed three times)
   - **~2.7% software interrupt (si)** (intermittent)
 - Multiple "yes" processes detected
 
+### CPU Spike Detected
+
+![CPU Spike](../assets/screenshots/day-3/day-3-cpu-spike.png)
+
 ### Interpretation
 The system experienced high CPU utilization caused by multiple user-space processes continuously generating output. The elevated system CPU percentage indicated heavy kernel activity handling process operations.
 
@@ -48,6 +56,10 @@ ps aux --sort=-%cpu | head
 - Identified "yes" processes under the current user account
 - Process IDs observed: **PID 998 and PID 997**
 - Each consuming approximately **99% CPU**
+
+### High CPU Processes Identified
+
+![Yes Process High CPU](../assets/screenshots/day-3/day-3-yes-process.png)
 
 ### Interpretation
 The CPU spike was confirmed to be caused by runaway user processes. This type of issue is classified as a **process-level CPU saturation incident**.
@@ -79,6 +91,10 @@ top
 - Only **1 running task**
 - No high-usage processes present
 - System performance normalized
+
+### CPU Restored to Normal
+
+![CPU Restored](../assets/screenshots/day-3/day-3-cpu-restored.png)
 
 ### Interpretation
 System resources returned to normal levels, confirming successful incident resolution and restoration of system stability.
