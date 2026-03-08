@@ -12,7 +12,7 @@ top
 
 ### Output Observed
 - CPU idle at **100.0%**
-- Memory used: **~408 MiB**
+- Memory used: **~403.8 MiB**
 - No abnormal processes
 - System operating normally
 
@@ -33,9 +33,9 @@ yes > /dev/null &  (executed two times)
 ### Output Observed (using top)
 - Tasks: **115 total**, **3 running**
 - CPU usage:
-  - **22.5% user (us)**
-  - **77.1% system (sy)**
-  - **~2.7% software interrupt (si)** (intermittent)
+  - **24.0% user (us)**
+  - **76.0% system (sy)**
+  - **0.0% software interrupt (si)** (intermittent)
 - Multiple "yes" processes detected
 
 ### CPU Spike Detected
@@ -54,7 +54,7 @@ ps aux --sort=-%cpu | head
 
 ### Output Observed
 - Identified "yes" processes under the current user account
-- Process IDs observed: **PID 998 and PID 997**
+- Process IDs observed: **PID 1159 and PID 1162**
 - Each consuming approximately **99% CPU**
 
 ### High CPU Processes Identified
