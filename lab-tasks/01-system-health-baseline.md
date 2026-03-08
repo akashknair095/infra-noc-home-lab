@@ -11,8 +11,8 @@ Establish an initial system performance baseline after server provisioning to su
 uptime
 
 **Output:**
-- Uptime: 32 minutes  
-- Load Average: 0.02, 0.01, 0.00
+- Uptime: 13 minutes  
+- Load Average: 0.00, 0.00, 0.00
 
 ### Uptime Baseline
 
@@ -31,8 +31,8 @@ The server is operating in a stable and idle state.
 free -h
 
 **Output:**
-- Used Memory: 458Mi  
-- Shared Memory: 1.1Mi  
+- Used Memory: 390Mi  
+- Shared Memory: 1.0Mi  
 - Swap Usage: 0B  
 
 **Interpretation:**
