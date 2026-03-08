@@ -8,7 +8,7 @@ To simulate a high CPU usage incident, investigate the root cause, and restore s
 ## Baseline System Check
 
 ### Command Executed
-top
+top -b -n 1 | head -20
 
 ### Output Observed
 - CPU idle at **100.0%**
@@ -28,15 +28,16 @@ The system was in a healthy state with no performance issues. This baseline conf
 ## CPU Spike Simulation
 
 ### Command Executed
-yes > /dev/null &  (executed two times)
+yes > /dev/null &  
+yes > /dev/null &  
 
 ### Output Observed (using top)
-- Tasks: **115 total**, **3 running**
+- Tasks: **124 total**, **3 running**
 - CPU usage:
   - **24.0% user (us)**
   - **76.0% system (sy)**
-  - **0.0% software interrupt (si)** (intermittent)
-- Multiple "yes" processes detected
+  - **0.0% software interrupt (si)**
+- Multiple "yes" processes detected consuming high CPU
 
 ### CPU Spike Detected
 
@@ -72,9 +73,8 @@ The CPU spike was confirmed to be caused by runaway user processes. This type of
 pkill yes
 
 ### Output Observed
-- Terminal displayed:
-  - "Terminated" messages for background yes processes
-- Processes successfully stopped
+- Background "yes" processes terminated successfully
+- No errors during termination
 
 ### Interpretation
 The runaway processes were safely terminated, removing the source of excessive CPU utilization.
@@ -84,11 +84,11 @@ The runaway processes were safely terminated, removing the source of excessive C
 ## Post-Incident Validation
 
 ### Command Executed
-top
+top -b -n 1 | head -20
 
 ### Output Observed
 - CPU returned to **100.0% idle**
-- Only **1 running task**
+- Tasks: **123 total**, **2 running**
 - No high-usage processes present
 - System performance normalized
 
