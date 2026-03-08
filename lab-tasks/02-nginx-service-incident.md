@@ -6,28 +6,35 @@ The Nginx web service was intentionally stopped to simulate a service outage sce
 ---
 
 ## Detection
-- `systemctl status nginx` showed: inactive (dead)
 
-The following output confirms that the nginx service was inactive during the simulated outage.
+- `systemctl status nginx` showed: **inactive (dead)**
+
+The output below confirms that the nginx service was inactive during the simulated outage.
 
 ### Service Status – Inactive
 
 ![Nginx Stopped](../assets/screenshots/day-2/day-2-nginx-stopped.png)
-  
-- `curl localhost` returned no response
-- Port 80 was not listening
+
+- Port 80 was not listening.
 
 ---
 
 ## Impact
-Web service unavailable locally.
-HTTP requests failed.
+
+Web service unavailable locally.  
+HTTP service on port 80 was inaccessible.
 
 ---
 
 ## Investigation
-Verified service status using systemctl.
-Checked listening ports using ss.
+
+Verified service status using:
+
+sudo systemctl status nginx
+
+Checked listening ports using:
+
+sudo ss -tulpn | grep 80
 
 The output below confirms that Port 80 was not listening during the simulated outage.
 
@@ -35,26 +42,25 @@ The output below confirms that Port 80 was not listening during the simulated ou
 
 ![Port 80 Check](../assets/screenshots/day-2/day-2-port-check.png)
 
-Reviewed logs using:
-
-sudo journalctl -u nginx --no-pager
-
-No configuration errors found.
+No configuration errors were identified.
 
 ---
 
 ## Root Cause
-Nginx service was stopped manually (simulated failure).
+
+The nginx service was stopped manually to simulate a service failure scenario.
 
 ---
 
 ## Resolution
+
 Executed:
+
 sudo systemctl start nginx
 
 Verified service restoration:
-- systemctl status → active (running)
-- curl localhost → Welcome page displayed
+
+- `systemctl status nginx` → **active (running)**
 
 The output below confirms that nginx returned to an active (running) state after the restart.
 
@@ -65,7 +71,10 @@ The output below confirms that nginx returned to an active (running) state after
 ---
 
 ## Preventive Consideration
-In production, monitoring tools should:
-- Trigger alert if service becomes inactive
-- Monitor port 80 health
-- Perform automated restart if configured
+
+In production environments, monitoring tools should:
+
+- Trigger alerts if the service becomes inactive  
+- Monitor port 80 health  
+- Perform automated restarts if configured  
+- Log service state transitions for auditing
