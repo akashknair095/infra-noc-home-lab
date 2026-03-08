@@ -28,7 +28,7 @@ The system was in a healthy state with no performance issues. This baseline conf
 ## CPU Spike Simulation
 
 ### Command Executed
-yes > /dev/null (executed three times)
+yes > /dev/null &  (executed two times)
 
 ### Output Observed (using top)
 - Tasks: **115 total**, **3 running**
