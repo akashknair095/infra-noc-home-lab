@@ -88,7 +88,7 @@ top -b -n 1 | head -20
 
 ### Output Observed
 - CPU returned to **100.0% idle**
-- Tasks: **123 total**, **2 running**
+- Tasks: **114 total**, **1 running**
 - No high-usage processes present
 - System performance normalized
 
