@@ -12,7 +12,7 @@ uptime
 
 **Output:**
 - Uptime: 13 minutes  
-- Load Average: 0.00, 0.00, 0.00
+- Load Average: 0.00, 0.00, 0.00  
 
 ### Uptime Baseline
 
@@ -31,8 +31,12 @@ The server is operating in a stable and idle state.
 free -h
 
 **Output:**
+- Total Memory: 3.8Gi  
 - Used Memory: 390Mi  
+- Free Memory: 3.4Gi  
 - Shared Memory: 1.0Mi  
+- Buff/Cache: 296Mi  
+- Available Memory: 3.4Gi  
 - Swap Usage: 0B  
 
 **Interpretation:**
@@ -47,15 +51,19 @@ No swap usage observed, indicating no memory pressure or resource exhaustion.
 df -h
 
 **Output:**
-- /dev/mapper/ubuntu--vg--ubuntu--lv: 46% utilized  
-
-**Interpretation:**
-Disk utilization is well below operational alert thresholds (80% warning, 90% critical).  
-No storage constraints detected at this time.
+- /dev/mapper/ubuntu--vg-ubuntu--lv  
+  - Size: 12G  
+  - Used: 5.0G  
+  - Available: 5.7G  
+  - Usage: 47%
 
 ### Memory and Disk Baseline
 
 ![Memory and Disk Baseline](../assets/screenshots/day-1/day-1-memory-disk.png)
+
+**Interpretation:**
+Disk utilization is well below operational alert thresholds (80% warning, 90% critical).  
+No storage constraints detected at this time.
 
 ---
 
@@ -65,11 +73,11 @@ No storage constraints detected at this time.
 top
 
 **Output Observations:**
-- Total Processes: 118  
+- Total Processes: 114  
 - Running: 1  
-- Sleeping: 117  
+- Sleeping: 113  
 - Zombie: 0  
-- CPU Usage: 0.0%  
+- CPU Idle: 100.0%  
 - Top Process: PID 1 (systemd)
 
 ### Process and CPU Baseline
@@ -78,7 +86,7 @@ top
 
 **Interpretation:**
 System process state is stable with no abnormal or zombie processes detected.  
-CPU utilization is minimal, confirming idle baseline conditions.  
+CPU utilization remains idle at 100%, confirming baseline stability.  
 PID 1 (systemd) resource usage is within expected normal parameters.
 
 ---
