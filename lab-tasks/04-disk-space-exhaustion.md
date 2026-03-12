@@ -17,47 +17,36 @@ df -h
 - Available: 5.6G
 - Usage: 49%
 
+### Baseline Snapshot
+
+![Day-4 Baseline](../assets/screenshots/day-4/day-4-baseline.png)
+
 ### Interpretation
 Disk usage was within normal operating limits and no immediate storage risk was observed.
-
-### Baseline Snapshot
-![Day-4 Baseline](../assets/screenshots/day-4/day-4-baseline.png)
 
 ---
 
 ## Disk Consumption Simulation
 
-### Commands Executed
+### Command Executed
 sudo fallocate -l 1G largefile1.img  
 sudo fallocate -l 1G largefile2.img  
 sudo fallocate -l 1G largefile3.img  
-
-### Output Observed
-- Disk usage increased gradually
-- Final usage reached approximately 77%
-
-### Interpretation
-This simulated a high disk utilization alert scenario caused by rapid storage consumption.
-
-### Exhaustion Snapshot
-![Day-4 Exhaustion](../assets/screenshots/day-4/day-4-exhaustion.png)
-
----
-
-## Alert Validation
-
-### Command Executed
 df -h
 
 ### Output Observed
-- Disk usage confirmed at 77%
+- Disk usage increased to approximately 77%
+
+### Disk Exhaustion Detected
+
+![Day-4 Exhaustion](../assets/screenshots/day-4/day-4-exhaustion.png)
 
 ### Interpretation
-Disk utilization crossed warning threshold levels and required investigation.
+Rapid storage allocation simulated a high disk utilization alert condition.
 
 ---
 
-## Initial Investigation
+## Root Directory Investigation
 
 ### Command Executed
 ls -lh /
@@ -65,67 +54,57 @@ ls -lh /
 ### Output Observed
 - Observed `swap.img` consuming approximately 2.3G
 
-### Interpretation
-Although `swap.img` appeared large, it is a system-managed swap file and not the cause of sudden disk growth.  
-This step highlights the importance of validating system files before taking corrective action.
-
 ### Root Directory Snapshot
+
 ![Day-4 Root Check](../assets/screenshots/day-4/day-4-root-check.png)
+
+### Interpretation
+Although large in size, `swap.img` is a system-managed file and not responsible for sudden disk growth.
 
 ---
 
 ## Directory Verification
 
 ### Command Executed
-pwd
-
-### Output Observed
-- Confirmed current working directory was `/home/aceak`
-
-### Command Executed
+pwd  
 ls -lh
 
 ### Output Observed
+- Current directory: `/home/aceak`
 - Identified multiple `largefile*.img` files
 - Each file approximately 1.0G
 
-### Interpretation
-The disk usage spike was caused by large user-created files consuming storage within the home directory.
+### Large Files Identified
 
-### Large Files Snapshot
 ![Day-4 Large Files](../assets/screenshots/day-4/day-4-largefiles.png)
+
+### Interpretation
+The disk usage spike was caused by user-generated files within the home directory.
 
 ---
 
 ## Controlled Incident Resolution
 
 ### Command Executed
-rm largefile1.img
+rm largefile1.img  
+df -h
 
 ### Output Observed
 - Disk usage reduced from 77% to 67%
 
-### Interpretation
-Initial cleanup confirmed that the identified files were the root cause of disk exhaustion.
-
 ### Partial Cleanup Snapshot
+
 ![Day-4 Partial Cleanup](../assets/screenshots/day-4/day-4-partial-cleanup.png)
 
----
-
-## Complete Cleanup
-
-### Command Executed
-rm largefile*.img
-
-### Output Observed
-- Disk usage returned to baseline levels
+### Interpretation
+Removal of one large file confirmed the identified root cause.
 
 ---
 
-## Post-Incident Validation
+## Complete Cleanup and Validation
 
 ### Command Executed
+rm largefile*.img  
 df -h
 
 ### Output Observed
@@ -133,11 +112,12 @@ df -h
 - Available: 5.6G
 - Usage: 49%
 
-### Interpretation
-System storage was fully restored, confirming successful incident resolution.
-
 ### Final Validation Snapshot
+
 ![Day-4 Restored](../assets/screenshots/day-4/day-4-restored.png)
+
+### Interpretation
+System storage returned to baseline levels, confirming successful incident resolution.
 
 ---
 
@@ -146,17 +126,12 @@ System storage was fully restored, confirming successful incident resolution.
 - Disk monitoring using `df`
 - File inspection using `ls`
 - Directory verification using `pwd`
-- Differentiating system-managed files from user-generated growth
-- Controlled cleanup procedures
+- Identifying root cause of storage growth
+- Controlled remediation procedures
 - Post-incident validation workflow
 
 ---
 
 ## Conclusion
 
-This exercise simulated a real-world disk exhaustion incident.  
-The investigation required distinguishing between system-managed files and abnormal user-generated storage growth, followed by controlled cleanup and validation of system recovery.
-
-The incident lifecycle followed:
-
-Detection → Validation → Investigation → Root Cause Identification → Controlled Remediation → Post-Incident Verification
+This exercise simulated a real-world disk exhaustion incident. The investigation required distinguishing system-managed files from abnormal user-generated storage growth, followed by structured cleanup and validation of system recovery.
