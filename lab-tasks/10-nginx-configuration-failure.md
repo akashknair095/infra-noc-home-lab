@@ -19,7 +19,7 @@ curl -I localhost
 
 ### Baseline Snapshot
 
-![Baseline Service State](../assets/screenshots/day-9/day-9-baseline.png)
+![Baseline Service State](../assets/screenshots/day-10/day-10-baseline.png)
 
 ### Interpretation
 The nginx service was operating normally before introducing the configuration fault.
@@ -42,7 +42,7 @@ sudo nginx -t
 
 ### Configuration Error Detected
 
-![Configuration Error](../assets/screenshots/day-9/day-9-config-error.png)
+![Configuration Error](../assets/screenshots/day-10/day-10-config-error.png)
 
 ### Interpretation
 The configuration syntax test failed due to an invalid directive, confirming a misconfiguration.
@@ -61,9 +61,9 @@ sudo systemctl status nginx
 
 ### Service Failure Observed
 
-![Restart Failed](../assets/screenshots/day-9/day-9-restart-failed.png)
+![Restart Failed](../assets/screenshots/day-10/day-10-restart-failed.png)
 
-![Service Status Failed](../assets/screenshots/day-9/day-9-service-failed.png)
+![Service Status Failed](../assets/screenshots/day-10/day-10-service-failed.png)
 
 ### Interpretation
 Nginx failed to start because configuration validation failed during the pre-start phase.
@@ -83,7 +83,7 @@ sudo tail -20 /var/log/nginx/error.log
 
 ### Log Investigation Snapshot
 
-![Log Investigation](../assets/screenshots/day-9/day-9-log-investigation.png)
+![Log Investigation](../assets/screenshots/day-10/day-10-log-investigation.png)
 
 ### Interpretation
 The failure occurred during configuration validation (ExecStartPre), preventing nginx from fully starting.
@@ -105,7 +105,7 @@ sudo nginx -t
 
 ### Configuration Fixed
 
-![Configuration Fixed](../assets/screenshots/day-9/day-9-config-fixed.png)
+![Configuration Fixed](../assets/screenshots/day-10/day-10-config-fixed.png)
 
 ### Interpretation
 Configuration validation succeeded after removing the invalid directive.
@@ -126,7 +126,7 @@ curl -I localhost
 
 ### Service Restored
 
-![Service Restored](../assets/screenshots/day-9/day-9-restored.png)
+![Service Restored](../assets/screenshots/day-10/day-10-restored.png)
 
 ### Interpretation
 The nginx service was successfully restored and validated.
