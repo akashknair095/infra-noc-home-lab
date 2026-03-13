@@ -14,7 +14,7 @@ Command executed:
 
 sudo systemctl status nginx
 
-![Nginx Running](../assets/screenshots/day-8/day-8-nginx-running.png)
+![Nginx Running](../assets/screenshots/day-9/day-9-nginx-running.png)
 
 ### Localhost Access Test
 
@@ -22,7 +22,7 @@ Command executed:
 
 curl -I localhost
 
-![Localhost Working](../assets/screenshots/day-8/day-8-localhost-working.png)
+![Localhost Working](../assets/screenshots/day-9/day-9-localhost-working.png)
 
 ### IP Access Test (Baseline)
 
@@ -30,7 +30,7 @@ Command executed:
 
 curl http://10.0.2.15
 
-![IP Working Baseline](../assets/screenshots/day-8/day-8-ip-working.png)
+![IP Working Baseline](../assets/screenshots/day-9/day-9-ip-working.png)
 
 Result: Service accessible via both localhost and IP address.
 
@@ -48,7 +48,7 @@ Configuration validation:
 
 sudo nginx -t
 
-![Config Validation](../assets/screenshots/day-8/day-8-config-validation.png)
+![Config Validation](../assets/screenshots/day-9/day-9-config-validation.png)
 
 Service restarted:
 
@@ -65,7 +65,7 @@ Commands executed:
 curl -I localhost  
 curl http://10.0.2.15
 
-![Local vs IP Failure](../assets/screenshots/day-8/day-8-local-vs-ip-comparison.png)
+![Local vs IP Failure](../assets/screenshots/day-9/day-9-local-vs-ip-comparison.png)
 
 Observation:
 
@@ -80,7 +80,7 @@ Command executed:
 
 sudo ss -tulpn | grep :80
 
-![Binding Verification](../assets/screenshots/day-8/day-8-binding-localhost.png)
+![Binding Verification](../assets/screenshots/day-9/day-9-binding-localhost.png)
 
 Finding:
 
@@ -118,7 +118,7 @@ Command executed:
 
 curl http://10.0.2.15
 
-![Service Restored](../assets/screenshots/day-8/day-8-restored.png)
+![Service Restored](../assets/screenshots/day-9/day-9-restored.png)
 
 Result:
 
