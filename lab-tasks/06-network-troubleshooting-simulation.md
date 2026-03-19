@@ -5,148 +5,168 @@ To simulate network-level failures, isolate the root cause using structured trou
 
 ---
 
-# Baseline Network Validation
+## Baseline Network Validation
 
-## Commands Executed
+### Commands Executed
 ip a  
 ip route  
 ping -c 4 8.8.8.8  
 ping -c 4 google.com  
 
-## Output Observed
-- Interface `enp0s3` assigned IP: 10.0.2.15/24  
-- Default gateway: 10.0.2.2 via enp0s3  
-- Ping to 8.8.8.8 successful (0% packet loss)  
-- Ping to google.com successful (0% packet loss)  
+### Output Observed
+- Interface `enp0s3` assigned IP: **10.0.2.15/24**
+- Default gateway: **10.0.2.2 via enp0s3**
+- Ping to **8.8.8.8** successful (0% packet loss)
+- Ping to **google.com** successful (0% packet loss)
 
-## Interpretation
+### Baseline Snapshot
+
+![Baseline Network](../assets/screenshots/day-6/day-6-baseline.png)
+
+### Interpretation
 The network stack was fully operational with working routing and DNS resolution.
 
 ---
 
-# Simulated Interface-Level Network Failure
+## Simulated Interface-Level Network Failure
 
-## Command Executed
+### Command Executed
 sudo ip link set enp0s3 down  
 
-## Verification
+### Verification Command
 ip a  
 
-## Output Observed
-- Interface `enp0s3` state changed to DOWN  
-
-## Connectivity Test
+### Connectivity Test
 ping -c 4 8.8.8.8  
 
-## Result
-Error: "connect: Network is unreachable"
+### Output Observed
+- Interface `enp0s3` state changed to **DOWN**
+- Ping failed with:  
+  **"connect: Network is unreachable"**
 
-## Interpretation
+### Interface Down Evidence
+
+![Interface Down](../assets/screenshots/day-6/day-6-interface-down.png)
+
+### Interpretation
 The system was unable to route traffic because the primary network interface was administratively disabled. This represents a link-level outage scenario.
 
 ---
 
-# Interface Restoration
+## Interface Restoration
 
-## Command Executed
+### Command Executed
 sudo ip link set enp0s3 up  
 
-## Verification
+### Verification
 ip a  
-
-## Output Observed
-- Interface `enp0s3` state changed to UP  
-- IP address 10.0.2.15/24 reassigned  
-
----
-
-# Post-Incident Connectivity Validation
-
-## Command Executed
 ping -c 4 8.8.8.8  
 
-## Output Observed
-- 4 packets transmitted  
-- 4 packets received  
-- 0% packet loss  
+### Output Observed
+- Interface `enp0s3` state changed to **UP**
+- IP address **10.0.2.15/24** reassigned
+- Ping to 8.8.8.8 successful (0% packet loss)
 
-## Interpretation
+### Interface Restored
+
+![Interface Restored](../assets/screenshots/day-6/day-6-interface-restored.png)
+
+### Interpretation
 Basic connectivity was restored successfully.
 
 ---
 
-# Extended Stability Validation
+## Extended Stability Validation
 
-## Command Executed
+### Command Executed
 ping -c 20 8.8.8.8  
 
-## Output Observed
-- 20 packets transmitted  
-- 20 packets received  
-- 0% packet loss  
+### Output Observed
+- 20 packets transmitted
+- 20 packets received
+- 0% packet loss
+- Stable RTT values (12–17 ms range)
 
-## Interpretation
+### Stability Test
+
+![Stability Test](../assets/screenshots/day-6/day-6-stability-test.png)
+
+### Interpretation
 Extended testing confirmed stable network connectivity with no intermittent packet loss.
 
 ---
 
-# DNS Configuration Review
+## DNS Configuration Review (Baseline)
 
-## Command Executed
+### Command Executed
 resolvectl status  
 
-## Output Observed
-- Current DNS server: 94.140.14.14  
-- Additional DNS server: 94.140.15.15  
-- Stub resolver: 127.0.0.53  
+### Output Observed
+- DNS Servers: **94.140.14.14**, **94.140.15.15**
+- Resolver mode: **Stub**
+- Interface: `enp0s3`
 
-## Interpretation
+### DNS Baseline Snapshot
+
+![DNS Baseline](../assets/screenshots/day-6/day-6-dns-baseline.png)
+
+### Interpretation
 System was using systemd-resolved with upstream DNS servers provided by AdGuard.
 
 ---
 
-# DNS Failure Simulation
+## DNS Failure Simulation
 
-## Command Executed
+### Command Executed
 sudo resolvectl dns enp0s3 1.1.1.250  
 
-## Connectivity Testing
+### Verification
+resolvectl status  
 
+### Connectivity Testing
 ping -c 4 8.8.8.8  
 ping -c 4 google.com  
 
-## Output Observed
-- Ping to 8.8.8.8 successful (0% packet loss)  
-- Ping to google.com failed with:
-  "Temporary failure in name resolution"
+### Output Observed
+- DNS Server changed to: **1.1.1.250**
+- Ping to 8.8.8.8 successful (0% packet loss)
+- Ping to google.com failed with:  
+  **"Temporary failure in name resolution"**
 
-## Interpretation
+### DNS Failure Evidence
+
+![DNS Failure](../assets/screenshots/day-6/day-6-dns-failure.png)
+
+### Interpretation
 Network routing remained functional, but DNS resolution failed due to invalid DNS server configuration. This confirmed a DNS-layer issue rather than a connectivity issue.
 
 ---
 
-# DNS Restoration
+## DNS Restoration
 
-## Command Executed
+### Command Executed
 sudo resolvectl dns enp0s3 94.140.14.14 94.140.15.15  
 
-## Validation
+### Validation Commands
 resolvectl status  
+ping -c 4 8.8.8.8  
 ping -c 4 google.com  
 
-## Output Observed
-- DNS servers restored to 94.140.14.14 and 94.140.15.15  
-- Ping to google.com successful  
-- 4 packets transmitted  
-- 4 packets received  
-- 0% packet loss  
+### Output Observed
+- DNS servers restored to **94.140.14.14** and **94.140.15.15**
+- Ping to 8.8.8.8 successful (0% packet loss)
+- Ping to google.com successful (0% packet loss)
 
-## Interpretation
+### DNS Restored
+
+![DNS Restored](../assets/screenshots/day-6/day-6-dns-restored.png)
+
+### Interpretation
 DNS services were successfully restored. Full name resolution and external connectivity were confirmed.
 
 ---
 
-# Skills Practiced
+## Skills Practiced
 
 - Network interface inspection using `ip a`
 - Route validation using `ip route`
@@ -159,6 +179,6 @@ DNS services were successfully restored. Full name resolution and external conne
 
 ---
 
-# Conclusion
+## Conclusion
 
 This exercise simulated both interface-level and DNS-level network failures. Structured troubleshooting enabled isolation of the root cause at different layers of the network stack. Full service restoration and stability validation confirmed successful incident resolution.
