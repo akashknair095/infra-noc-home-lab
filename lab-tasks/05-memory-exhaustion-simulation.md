@@ -7,93 +7,91 @@ To simulate high memory usage, observe system behavior under memory pressure, id
 
 ## Baseline Memory Check
 
-### Commands Executed
+### Command Executed
 free -h  
-top  
+top -b -n 1 | head -20
 
 ### Output Observed
-- Total Memory: 3.6 GiB  
-- Used: ~418 MiB  
-- Free: ~3.3 GiB  
-- Available: ~3.4 GiB  
-- Buff/cache: ~285 MiB  
-- Swap: 2.2 GiB total, 0B used  
+- Total Memory: **3.8 GiB**
+- Used: **404 MiB**
+- Free: **3.4 GiB**
+- Available: **3.4 GiB**
+- Buff/cache: **294 MiB**
+- Swap: **2.2 GiB total, 0B used**
+- CPU idle: ~95%
+
+### Baseline Snapshot
+
+![Day-5 Baseline](../assets/screenshots/day-5/day-5-baseline.png)
 
 ### Interpretation
-The system memory was in a healthy state with very low usage and no swap activity.
+The system memory was in a healthy state with minimal utilization and no swap activity. CPU usage was low and no memory-intensive processes were running.
 
 ---
 
 ## Memory Stress Simulation
 
 ### Command Executed
-stress --vm 1 --vm-bytes 2G --timeout 60
+stress --vm 1 --vm-bytes 2G --timeout 60 &
 
-### Observed Behavior
-- Virtual machine became noticeably slow
-- Commands responded slowly
-- System performance temporarily degraded
+### Output Observed (During Stress)
+- Total Memory: **3.8 GiB**
+- Used: **2.0 GiB**
+- Free: **1.8 GiB**
+- Available: **1.8 GiB**
+- Buff/cache: **297 MiB**
+- Swap: **0B used**
+- Stress process PID: **1285**
+- VIRT: **~2100776 KiB**
+- RES: **~856380 KiB**
+- CPU usage: **100%**
+- %MEM: **21.4%**
+
+### Under Stress Snapshot
+
+![Day-5 Under Stress](../assets/screenshots/day-5/day-5-under-stress.png)
 
 ### Interpretation
-The stress process allocated approximately 2 GB of RAM, creating memory pressure. The system experienced reduced responsiveness as the kernel prioritized memory management.
+The stress process allocated approximately 2 GiB of memory, significantly increasing memory utilization. The process consumed 100% CPU while allocating memory, confirming controlled memory pressure simulation.
 
 ---
 
 ## Post-Stress Validation
 
 ### Command Executed
-free -h
+free -h  
+top -b -n 1 | head -20
 
 ### Output Observed
-- Used Memory: ~580 MiB  
-- Buff/cache increased to ~324 MiB  
-- Swap usage remained at 0B  
+- Total Memory: **3.8 GiB**
+- Used: **438 MiB**
+- Free: **3.3 GiB**
+- Available: **3.4 GiB**
+- Buff/cache: **297 MiB**
+- Swap: **0B used**
+- CPU idle: **100%**
+- No stress process present
+
+### Post-Stress Snapshot
+
+![Day-5 Post Stress](../assets/screenshots/day-5/day-5-post-stress.png)
 
 ### Interpretation
-Memory usage returned near baseline after the stress process terminated. Increased buff/cache indicates Linux memory optimization and does not represent a memory leak.
-
----
-
-## Process-Level Memory Investigation
-
-### Commands Executed
-stress --vm 1 --vm-bytes 1G --timeout 60 &  
-top  
-
-### Output Observed
-- Stress process identified under PID 1193  
-- VIRT memory: ~1 GB  
-- RES memory: ~247 MB  
-- State: Running  
-- CPU usage: ~100%  
-- Memory usage: ~6%  
-
-### Interpretation
-The stress process was confirmed as the primary consumer of system memory. The VIRT value represented total allocated virtual memory, while RES showed actual physical memory usage.
-
----
-
-## Stress Process Completion
-
-### Output Observed
-- "stress: info: [1192] successful run completed in 61s"
-
-### Interpretation
-The memory stress process completed successfully within the configured timeout period. No forced termination or out-of-memory (OOM) events occurred. System stability was restored automatically after the process exited.
+Memory usage returned close to baseline levels after the stress process completed. No swap usage occurred and system stability was fully restored. This confirms successful memory pressure handling without triggering out-of-memory (OOM) events.
 
 ---
 
 ## Skills Practiced
 
 - Monitoring memory usage using `free` and `top`
-- Understanding Linux memory allocation behavior
+- Simulating memory pressure using `stress`
 - Identifying memory-intensive processes
-- Interpreting VIRT vs RES memory metrics
-- Observing system behavior under memory pressure
-- Validating system recovery after high memory usage
+- Interpreting VIRT vs RES metrics
+- Observing system responsiveness under load
+- Validating system recovery post-incident
 
 ---
 
 ## Conclusion
 
-This simulation demonstrated how high memory allocation affects system performance. The investigation confirmed the stress process as the root cause, and the system recovered automatically after process completion without swap usage or OOM events.
+This exercise simulated a real-world memory pressure incident in a Linux environment. The stress process was identified as the root cause of increased memory usage, and the system automatically recovered after the process completed. The simulation demonstrated controlled incident handling, root cause verification, and structured post-incident validation.
