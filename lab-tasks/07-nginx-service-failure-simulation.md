@@ -1,216 +1,204 @@
 # Nginx Service Failure Simulation
 
 ## Objective
-Simulate service-level failures and practice troubleshooting techniques to restore application availability.
-
-This exercise includes two scenarios:
-1. Service stopped unexpectedly
-2. Service failing to start due to configuration error
+To simulate service-level failures and practice troubleshooting techniques to restore application availability. This exercise includes both a service outage and a configuration-based failure scenario.
 
 ---
 
-# Scenario 1 — Service Stopped
+## Scenario 1 — Service Stopped
 
-## Service Verification
-Command executed:
+### Baseline Verification
 
-sudo systemctl status nginx
+#### Command Executed
+sudo systemctl status nginx  
+curl -I localhost  
 
-Output observed:
+#### Output Observed
+- Service status: **active (running)**  
+- HTTP response: **200 OK**  
+- Server: **nginx/1.24.0**
 
-Active: active (running)
+#### Baseline Snapshot
 
-Service was initially running normally.
+![Nginx Running](../assets/screenshots/day-7/day-7-baseline.png)
 
----
-
-## Simulated Service Failure
-
-Command executed:
-
-sudo systemctl stop nginx
-
-Verification:
-
-sudo systemctl status nginx
-
-Output observed:
-
-Active: inactive (dead)
+#### Interpretation
+The nginx service was running normally and serving HTTP requests successfully.
 
 ---
 
-## Connectivity Test
+### Simulated Service Failure
 
-Command executed:
+#### Command Executed
+sudo systemctl stop nginx  
+sudo systemctl status nginx  
 
-curl localhost
+#### Output Observed
+- Service status changed to: **inactive (dead)**  
 
-Result:
+#### Service Stopped
 
-curl: (7) Failed to connect to localhost port 80
+![Service Stopped](../assets/screenshots/day-7/day-7-service-stopped.png)
 
-Interpretation:
-
-The web service became unreachable because nginx was stopped.
-
----
-
-## Service Restoration
-
-Command executed:
-
-sudo systemctl start nginx
-
-Verification:
-
-sudo systemctl status nginx
-
-Output observed:
-
-Active: active (running)
+#### Interpretation
+The nginx service was intentionally stopped, simulating an unexpected service outage.
 
 ---
 
-## Application Validation
+### Connectivity Test
 
-Command executed:
+#### Command Executed
+curl localhost  
 
-curl -I localhost
+#### Output Observed
+- Connection failed:
+  - Failed to connect to localhost port 80
 
-Output observed:
-
-HTTP/1.1 200 OK
-Server: nginx/1.24.0
-
-Interpretation:
-
-The web server resumed normal operation.
+#### Interpretation
+The application became unreachable because the web service was not running.
 
 ---
 
-# Scenario 2 — Configuration Failure
+### Service Restoration
 
-## Introduced Configuration Error
+#### Command Executed
+sudo systemctl start nginx  
+sudo systemctl status nginx  
+curl -I localhost  
 
-Edited file:
+#### Output Observed
+- Service status: **active (running)**  
+- HTTP response: **200 OK**
 
-/etc/nginx/sites-enabled/default
+#### Service Restored
+
+![Service Restored](../assets/screenshots/day-7/day-7-service-restored.png)
+
+#### Interpretation
+The nginx service was successfully restarted, restoring application availability.
+
+---
+
+## Scenario 2 — Configuration Failure
+
+### Introduced Configuration Error
+
+#### Action Performed
+Edited the configuration file:
+
+/etc/nginx/sites-enabled/default  
 
 Added invalid directive:
-
 invalid_directive on;
 
 ---
 
-## Configuration Validation
+### Configuration Validation
 
-Command executed:
+#### Command Executed
+sudo nginx -t  
 
-sudo nginx -t
+#### Output Observed
+- unknown directive "invalid_directive"  
+- configuration file test failed  
 
-Output observed:
+#### Configuration Error Detected
 
-unknown directive "invalid_directive"
-/etc/nginx/sites-enabled/default:24
-configuration file test failed
+![Config Error](../assets/screenshots/day-7/day-7-config-error.png)
 
-Interpretation:
-
-The nginx configuration contained an invalid directive.
-
----
-
-## Restart Attempt
-
-Command executed:
-
-sudo systemctl restart nginx
-
-Result:
-
-Job for nginx.service failed because the control process exited with error code.
-
-Service status:
-
-Active: failed
-
-Interpretation:
-
-Nginx failed to start due to configuration error.
+#### Interpretation
+The nginx configuration contained an invalid directive, causing validation failure.
 
 ---
 
-## Root Cause Investigation
+### Service Startup Failure
 
-Command executed:
+#### Command Executed
+sudo systemctl restart nginx  
+sudo systemctl status nginx  
 
-sudo journalctl -u nginx --no-pager | tail -20
+#### Output Observed
+- Service status: **failed (Result: exit-code)**  
+- Job for nginx.service failed  
 
-Logs confirmed the configuration error preventing startup.
+#### Service Failure
+
+![Service Failed](../assets/screenshots/day-7/day-7-service-failed.png)
+
+#### Interpretation
+The service could not start due to invalid configuration, resulting in an application outage.
 
 ---
 
-## Configuration Fix
+### Root Cause Investigation
 
+#### Command Executed
+sudo journalctl -u nginx --no-pager | tail -20  
+
+#### Output Observed
+- Logs showed invalid directive error  
+- Configuration test failure  
+- Service exit with failure status  
+
+#### Log Investigation
+
+![Log Investigation](../assets/screenshots/day-7/day-7-log-investigation.png)
+
+#### Interpretation
+Log analysis confirmed that the configuration error was the root cause of the service failure.
+
+---
+
+### Configuration Fix
+
+#### Action Performed
 Removed the invalid directive from the configuration file.
 
-Validation performed:
+#### Validation Command
+sudo nginx -t  
 
-sudo nginx -t
+#### Output Observed
+- syntax is ok  
+- test is successful  
 
-Output observed:
-
-syntax is ok
-test is successful
-
----
-
-## Service Restoration
-
-Command executed:
-
-sudo systemctl start nginx
-
-Verification:
-
-sudo systemctl status nginx
-
-Output observed:
-
-Active: active (running)
+#### Interpretation
+The configuration issue was resolved successfully.
 
 ---
 
-## Final Service Validation
+### Service Restoration
 
-Command executed:
+#### Command Executed
+sudo systemctl start nginx  
+sudo systemctl status nginx  
+curl -I localhost  
 
-curl -I localhost
+#### Output Observed
+- Service status: **active (running)**  
+- HTTP response: **200 OK**
 
-Output observed:
+#### Final Validation
 
-HTTP/1.1 200 OK
-Server: nginx/1.24.0
+![Final Restored](../assets/screenshots/day-7/day-7-final-restored.png)
 
-Interpretation:
-
-The nginx service was successfully restored and began serving HTTP requests again.
-
----
-
-# Skills Practiced
-
-- Service monitoring using systemctl
-- Log analysis using journalctl
-- Configuration validation using nginx -t
-- Troubleshooting failed service startups
-- Identifying configuration errors
-- Restoring application availability
-- Verifying HTTP responses using curl
+#### Interpretation
+The nginx service was fully restored and resumed normal operation.
 
 ---
 
-# Conclusion
+## Skills Practiced
 
-This exercise simulated real-world service failures including a stopped service and a configuration error preventing service startup. Structured troubleshooting and validation steps were used to restore service availability.
+- Service monitoring using `systemctl`  
+- Troubleshooting service outages  
+- Configuration validation using `nginx -t`  
+- Log analysis using `journalctl`  
+- Root cause identification  
+- Service recovery procedures  
+- Application availability validation using `curl`  
+- NOC-style incident handling workflow  
+
+---
+
+## Conclusion
+
+This exercise simulated two real-world scenarios: a service outage and a configuration failure. Through structured troubleshooting, the root causes were identified and resolved, restoring full application availability.
