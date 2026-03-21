@@ -1,142 +1,138 @@
 # Nginx Service Binding Misconfiguration
 
 ## Objective
-
-Simulate a scenario where nginx is running but only bound to localhost (127.0.0.1), preventing access via the server’s IP address.
+To simulate a scenario where nginx is running but bound only to the localhost interface, making it inaccessible via the server’s IP address.
 
 ---
 
 ## Baseline Verification
 
-### Service Status
+### Commands Executed
+sudo systemctl status nginx  
+curl -I localhost  
+curl http://10.0.2.15  
 
-Command executed:
+### Output Observed
+- Service status: **active (running)**  
+- Localhost response: **200 OK**  
+- IP-based access: **working**
 
-sudo systemctl status nginx
+### Baseline Evidence
 
-![Nginx Running](../assets/screenshots/day-9/day-9-nginx-running.png)
+![Nginx Running](../assets/screenshots/day-9/day-9-nginx-running.png)  
+![Localhost Working](../assets/screenshots/day-9/day-9-localhost-working.png)  
+![IP Working](../assets/screenshots/day-9/day-9-ip-working.png)
 
-### Localhost Access Test
-
-Command executed:
-
-curl -I localhost
-
-![Localhost Working](../assets/screenshots/day-9/day-9-localhost-working.png)
-
-### IP Access Test (Baseline)
-
-Command executed:
-
-curl http://10.0.2.15
-
-![IP Working Baseline](../assets/screenshots/day-9/day-9-ip-working.png)
-
-Result: Service accessible via both localhost and IP address.
+### Interpretation
+The nginx service was operating normally and accessible via both localhost and system IP.
 
 ---
 
 ## Incident Simulation
 
-The nginx configuration was modified to bind only to localhost.
-
-Configuration change:
+### Configuration Change
+Updated nginx configuration:
 
 listen 127.0.0.1:80;
 
-Configuration validation:
+### Validation
+Command executed:
 
-sudo nginx -t
+sudo nginx -t  
+
+### Output Observed
+- Configuration syntax: **OK**
 
 ![Config Validation](../assets/screenshots/day-9/day-9-config-validation.png)
 
-Service restarted:
+### Action Performed
+sudo systemctl restart nginx  
 
-sudo systemctl restart nginx
+### Interpretation
+The service was intentionally restricted to the loopback interface.
 
 ---
 
 ## Observed Failure
 
-### Local vs IP Access Comparison
-
-Commands executed:
-
+### Commands Executed
 curl -I localhost  
-curl http://10.0.2.15
+curl http://10.0.2.15  
+
+### Output Observed
+- Localhost: **working (200 OK)**  
+- IP access: **failed (connection refused)**  
+
+### Failure Evidence
 
 ![Local vs IP Failure](../assets/screenshots/day-9/day-9-local-vs-ip-comparison.png)
 
-Observation:
-
-- Localhost access successful
-- IP-based access failed
+### Interpretation
+The service appeared healthy but was not accessible externally via IP.
 
 ---
 
-## Investigation
+## Root Cause Investigation
 
-Command executed:
+### Command Executed
+sudo ss -tulpn | grep :80  
 
-sudo ss -tulpn | grep :80
+### Output Observed
+- nginx listening on: **127.0.0.1:80**
 
-![Binding Verification](../assets/screenshots/day-9/day-9-binding-localhost.png)
+### Binding Evidence
 
-Finding:
+![Binding Check](../assets/screenshots/day-9/day-9-binding-localhost.png)
 
-nginx was listening on:
-
-127.0.0.1:80
-
-Instead of:
-
-0.0.0.0:80
-
-Root Cause:
-
-The service was bound only to the loopback interface.
+### Root Cause
+Nginx was bound only to the loopback interface instead of all network interfaces.
 
 ---
 
 ## Resolution
 
-The configuration was restored to:
-
+### Configuration Restored
 listen 80 default_server;  
-listen [::]:80 default_server;
+listen [::]:80 default_server;  
 
-Configuration revalidated:
-
+### Commands Executed
 sudo nginx -t  
-sudo systemctl restart nginx
+sudo systemctl restart nginx  
+
+### Interpretation
+Service binding was restored to allow access from all interfaces.
 
 ---
 
 ## Validation
 
-Command executed:
+### Command Executed
+curl http://10.0.2.15  
 
-curl http://10.0.2.15
+### Output Observed
+- HTTP response successful  
+- Service accessible via IP  
+
+### Final Evidence
 
 ![Service Restored](../assets/screenshots/day-9/day-9-restored.png)
 
-Result:
-
-Service successfully accessible via IP address.
+### Interpretation
+Full service accessibility was successfully restored.
 
 ---
 
 ## Skills Practiced
 
-- Service binding configuration
-- Understanding difference between 127.0.0.1 and 0.0.0.0
-- Layered troubleshooting
-- Using `ss` to inspect listening interfaces
-- Root cause isolation
-- Service restoration validation
+- Understanding service binding behavior  
+- Differentiating localhost vs external access  
+- Diagnosing partial service availability issues  
+- Using `ss` for port/interface inspection  
+- Configuration-level troubleshooting  
+- End-to-end validation of service recovery  
 
 ---
 
 ## Conclusion
 
-This exercise demonstrated how a service can appear operational while being inaccessible due to interface binding misconfiguration. Structured investigation identified the root cause and restored full service availability.
+This exercise demonstrated a real-world scenario where a service appeared operational but was inaccessible externally due to binding misconfiguration. Systematic troubleshooting identified the root cause and restored full service availability.
