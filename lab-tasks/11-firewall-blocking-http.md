@@ -1,56 +1,71 @@
-# Firewall Blocking HTTP Access (UFW)
+# Firewall-Based Access Control Failure (UFW)
 
 ## Objective
 
-Simulate a scenario where firewall rules restrict HTTP access to a running nginx service and analyze the behavior under a virtualized environment.
+Simulate a scenario where firewall rules block HTTP access, investigate accessibility behavior, and validate service exposure under controlled network conditions.
 
 ---
 
-## Baseline Service Check
+## Baseline Verification
 
-### Command Executed
-ip a  
+### Network Baseline
+
+#### Command Executed
+ip a
+
+### Output Observed
+- Interface: enp0s3
+- IP Address: 10.0.2.15
+
+### Network Baseline Snapshot
+
+![Network Baseline](../assets/screenshots/day-11/day-11-network-baseline.png)
+
+### Interpretation
+The system has an active network interface with a valid IP address assigned.
+
+---
+
+### Service Baseline
+
+#### Command Executed
 sudo systemctl status nginx  
 curl -I localhost  
 curl -I http://10.0.2.15  
 
 ### Output Observed
-- System assigned IP address (10.0.2.15)
 - Active: active (running)
 - HTTP/1.1 200 OK (localhost)
 - HTTP/1.1 200 OK (IP)
 
-### Baseline Snapshot
-
-![Network Baseline](../assets/screenshots/day-11/day-11-network-baseline.png)
+### Service Baseline Snapshot
 
 ![Service Baseline](../assets/screenshots/day-11/day-11-service-baseline.png)
 
 ### Interpretation
-The system network and nginx service were functioning normally, and the application was accessible both locally and via IP address.
+The nginx service is running and accessible via both localhost and system IP.
 
 ---
 
-## Firewall Configuration
+## Firewall Initialization
 
 ### Command Executed
 sudo ufw enable  
 sudo ufw status  
 
 ### Output Observed
-- Status: active
-- No rules configured initially
+- Firewall is active
 
-### Firewall Enabled
+### Firewall Enabled Snapshot
 
 ![UFW Enabled](../assets/screenshots/day-11/day-11-ufw-enabled-clean.png)
 
 ### Interpretation
-Firewall was enabled in a clean state with no restrictions applied.
+UFW firewall is enabled with default configuration.
 
 ---
 
-## Firewall Rule Application
+## Firewall Rule Configuration
 
 ### Command Executed
 sudo ufw default deny incoming  
@@ -59,20 +74,19 @@ sudo ufw deny 80
 sudo ufw status  
 
 ### Output Observed
-- Default: deny (incoming)
-- 22/tcp ALLOW
-- 80 DENY
+- 22/tcp → ALLOW  
+- 80 → DENY  
 
 ### Firewall Rules Applied
 
 ![UFW Rules Applied](../assets/screenshots/day-11/day-11-ufw-rules-applied.png)
 
 ### Interpretation
-Firewall rules were configured to block HTTP traffic while allowing SSH access.
+Incoming HTTP traffic (port 80) is explicitly blocked while SSH access remains allowed.
 
 ---
 
-## Connectivity Test After Firewall Rules
+## Access Validation
 
 ### Command Executed
 curl -I localhost  
@@ -82,12 +96,13 @@ curl -I http://10.0.2.15
 - HTTP/1.1 200 OK (localhost)
 - HTTP/1.1 200 OK (IP)
 
-### Connectivity Snapshot
+### Firewall Test Snapshot
 
 ![Firewall Test](../assets/screenshots/day-11/day-11-firewall-test.png)
 
-### Interpretation
-Despite firewall rules denying port 80, the service remained accessible.
+### Observation
+- Localhost access successful  
+- IP-based access also successful (unexpected behavior)
 
 ---
 
@@ -97,76 +112,84 @@ Despite firewall rules denying port 80, the service remained accessible.
 sudo ss -tulpn | grep :80  
 
 ### Output Observed
-- nginx listening on 0.0.0.0:80
-- nginx listening on [::]:80
+- nginx listening on:
+  - 0.0.0.0:80  
+  - [::]:80  
 
-### Port Verification
+### Port Verification Snapshot
 
 ![Port Verification](../assets/screenshots/day-11/day-11-port-verification.png)
 
-### Interpretation
-The nginx service was correctly bound to all interfaces and functioning normally.
+### Findings
+- nginx is correctly bound to all interfaces
+- Service is actively listening on port 80
 
 ---
 
 ## Root Cause Analysis
 
-### Finding
-- Firewall rules were correctly applied
-- Traffic was not being blocked as expected
+### Key Finding
+
+Despite firewall rules denying port 80, HTTP access was still successful.
 
 ### Root Cause
-- Requests were initiated from the same host
-- Local traffic does not traverse the firewall as external incoming traffic
-- NAT networking further restricts external traffic simulation
 
-### Interpretation
-The firewall did not block the request due to local traffic behavior and virtualization limitations.
+- The test traffic originated from the same host (local machine)
+- UFW primarily filters **external incoming traffic**
+- Local loopback/internal traffic bypasses firewall restrictions
+
+### Environmental Limitation
+
+- The VM is configured with **NAT networking**
+- NAT prevents true external access simulation from host to guest
+- As a result, firewall rules could not be validated through internal curl requests
 
 ---
 
 ## Resolution
 
-### Command Executed
-sudo ufw allow 80  
-sudo ufw status  
+No configuration issue was present in nginx or firewall rules.
 
-### Output Observed
-- 80/tcp ALLOW
+### Correct Understanding
 
-### Interpretation
-HTTP access explicitly allowed through firewall rules.
+- Firewall rules were correctly applied  
+- Behavior observed is expected in NAT-based local testing  
+
+### Recommended Approach (Real-World)
+
+- Use **Bridged Adapter** for external testing  
+OR  
+- Test from a separate machine to validate firewall enforcement  
 
 ---
 
-## Service Validation
+## Validation
 
 ### Command Executed
-curl -I http://10.0.2.15  
+sudo ufw status  
+sudo ss -tulpn | grep :80  
 
 ### Output Observed
-- HTTP/1.1 200 OK
-
-### Service Restored
-
-![Service Restored](../assets/screenshots/day-11/day-11-firewall-test.png)
+- Port 80 → DENY (UFW)
+- nginx → LISTEN on port 80
 
 ### Interpretation
-HTTP access confirmed after allowing port 80.
+Firewall rules are active and service is running, confirming configuration correctness despite local testing limitations.
 
 ---
 
 ## Skills Practiced
 
-- Firewall configuration using UFW
+- Firewall configuration using `ufw`
+- Access control implementation
+- Network-level troubleshooting
 - Understanding local vs external traffic behavior
-- Network troubleshooting in virtual environments
-- Service validation using curl
-- Port inspection using ss
-- Root cause analysis
+- Service exposure validation
+- Identifying environment limitations (NAT vs Bridged)
+- Root cause analysis in misleading scenarios
 
 ---
 
 ## Conclusion
 
-This exercise demonstrated firewall configuration and highlighted the difference between local and external traffic behavior. Although HTTP access was not blocked due to NAT-based virtualization, the investigation provided insight into real-world firewall behavior and network flow.
+This exercise demonstrated firewall-based access control using UFW. Although HTTP access remained available during testing, investigation revealed that local traffic bypassed firewall enforcement due to NAT-based virtualization. The scenario highlights the importance of understanding network context when validating security controls.
