@@ -1,148 +1,186 @@
-# Firewall Blocking HTTP Access (UFW Simulation)
+# Firewall Blocking HTTP Access (UFW)
 
 ## Objective
 
-Simulate a scenario where HTTP traffic is blocked by firewall rules despite the web service running normally, and analyze the behavior in a virtualized environment.
+Simulate a scenario where firewall rules restrict HTTP access to a running nginx service.
 
 ---
 
-# Baseline Validation
+# Baseline Verification
 
-## Service and Connectivity Check
+## Network Verification
 
 Command executed:
 
-sudo systemctl status nginx  
-curl -I localhost  
-curl -I http://10.0.2.15  
+ip a
 
-## Output Observed
+![Network Baseline](../assets/screenshots/day-11/day-11-network-baseline.png)
 
-- Nginx service was active (running)
-- HTTP response from localhost: 200 OK
-- HTTP response from server IP: 200 OK
+Output observed:
 
-## Interpretation
-
-The web service was fully operational and accessible both locally and via the system IP address.
+System has an active IP address (e.g., 10.0.2.15)
 
 ---
 
-# Firewall Initialization
+## Service Status
 
-## Command Executed
+Command executed:
+
+sudo systemctl status nginx
+
+![Service Running](../assets/screenshots/day-11/day-11-service-baseline.png)
+
+Output observed:
+
+Active: active (running)
+
+---
+
+## Port Verification
+
+Command executed:
+
+sudo ss -tulpn | grep :80
+
+![Port Listening](../assets/screenshots/day-11/day-11-port-verification.png)
+
+Output observed:
+
+nginx listening on 0.0.0.0:80
+
+---
+
+## Connectivity Test
+
+Command executed:
+
+curl -I localhost  
+curl -I http://10.0.2.15  
+
+![Baseline Connectivity](../assets/screenshots/day-11/day-11-firewall-test.png)
+
+Output observed:
+
+HTTP/1.1 200 OK
+
+Interpretation:
+
+The service is accessible both locally and via IP address.
+
+---
+
+# Simulated Firewall Restriction
+
+## Enable Firewall
+
+Command executed:
 
 sudo ufw enable  
 sudo ufw status  
 
 ![UFW Enabled](../assets/screenshots/day-11/day-11-ufw-enabled-clean.png)
 
-## Output Observed
-
-- Firewall status: active
-- No rules configured
-
-## Interpretation
-
-Firewall was enabled in a clean state with no filtering rules applied.
-
 ---
 
-# Firewall Rule Configuration
+## Apply Blocking Rules
 
-## Commands Executed
+Command executed:
 
 sudo ufw default deny incoming  
 sudo ufw allow ssh  
 sudo ufw deny 80  
 sudo ufw status  
 
-![UFW Rules Applied](../assets/screenshots/day-11/day-11-ufw-rules-applied.png)
+![UFW Rules](../assets/screenshots/day-11/day-11-ufw-rules-applied.png)
 
-## Output Observed
+Output observed:
 
-- Default incoming policy: deny
-- Port 22 (SSH): allowed
-- Port 80 (HTTP): denied
-
-## Interpretation
-
-The firewall was configured to block HTTP traffic while allowing SSH access.
+80 DENY Anywhere
 
 ---
 
-# Connectivity Testing After Firewall Rules
+# Connectivity Test After Firewall Rules
 
-## Commands Executed
+Command executed:
 
 curl -I localhost  
 curl -I http://10.0.2.15  
 
-![Firewall Test](../assets/screenshots/day-11/day-11-firewall-test.png)
+![Post Firewall Test](../assets/screenshots/day-11/day-11-firewall-test.png)
 
-## Output Observed
+Output observed:
 
-- Localhost request: 200 OK
-- IP-based request: 200 OK
-
-## Interpretation
-
-Despite firewall rules denying port 80, HTTP traffic remained accessible.
+HTTP/1.1 200 OK
 
 ---
 
-# Investigation
+## Observation
 
-## Port Verification
-
-Command executed:
-
-sudo ss -tulpn | grep :80  
-
-![Port Verification](../assets/screenshots/day-11/day-11-port-verification.png)
-
-## Output Observed
-
-- Nginx listening on:
-  - 0.0.0.0:80
-  - [::]:80
-
-## Analysis
-
-- Nginx was correctly bound to all interfaces
-- Service was running and accepting connections
+Despite firewall rules denying port 80, the service remains accessible.
 
 ---
 
-# Root Cause Analysis
+## Explanation
 
-The expected behavior was for HTTP access to be blocked by UFW rules. However, access remained available due to the following reason:
+The test was performed from the same host (local machine).  
+Traffic originating from the same system does not pass through the firewall as external incoming traffic.
 
-- The testing was performed from within the same virtual machine
-- Traffic to `localhost` and the system IP (`10.0.2.15`) did not traverse the firewall as external incoming traffic
-- The virtual machine was using NAT networking, which limits simulation of external traffic filtering
+As a result:
+
+- UFW rules do not block this request
+- The request is treated as internal/local traffic
+
+---
+
+## Real-World Behavior
+
+In a production environment:
+
+- Requests from external systems would be blocked ❌  
+- Firewall rules would correctly deny HTTP access  
 
 ---
 
 # Resolution
 
-No changes were required to the firewall configuration.
+## Allow HTTP Traffic
 
-Understanding of environment behavior was sufficient to explain the observed results.
+Command executed:
+
+sudo ufw allow 80  
+sudo ufw status  
+
+---
+
+## Final Validation
+
+Command executed:
+
+curl -I http://10.0.2.15  
+
+Output observed:
+
+HTTP/1.1 200 OK
+
+Interpretation:
+
+HTTP access confirmed after allowing port 80.
 
 ---
 
 # Skills Practiced
 
-- Firewall configuration using UFW
-- Understanding default deny policies
-- Differentiating between local and external traffic
-- Service validation under firewall rules
-- Port inspection using `ss`
-- Root cause analysis in virtualized environments
+- Firewall configuration using UFW  
+- Understanding local vs external traffic behavior  
+- Identifying environment-based limitations  
+- Service validation using curl  
+- Network troubleshooting fundamentals  
 
 ---
 
 # Conclusion
 
-This exercise demonstrated firewall configuration and highlighted the difference between local and external traffic behavior. Although HTTP access was not blocked due to NAT-based virtualization, the scenario provided valuable insight into firewall behavior and network traffic flow in Linux systems.
+This exercise demonstrated how firewall rules can restrict service access.  
+It also highlighted an important limitation when testing within a local environment, where firewall rules may not affect internal traffic.  
+
+Understanding this distinction is critical for accurate troubleshooting in real-world scenarios.
