@@ -39,6 +39,8 @@ The objective is to build practical, job-ready skills in diagnosing infrastructu
 ---
 ## Repository Structure
 
+The repository is organized into setup configuration, task-based lab exercises, and supporting assets:
+
 ```
 infra-noc-home-lab/
 ├── assets/
@@ -98,7 +100,8 @@ Detected and resolved nginx configuration errors using validation and logs.
 Applied firewall rules and analyzed behavior under NAT limitations.
 
 ### Day 12: Capstone – Integrated Incident Response and Monitoring
-Simulated a multi-layer incident involving service failure, configuration error, and CPU load. Performed root cause isolation, log investigation, and full service restoration.
+Simulated a multi-layer incident involving service failure, configuration error, and CPU load. 
+Demonstrated root cause isolation by distinguishing between actual failure and environmental noise, followed by full service restoration.
 
 ---
 
@@ -142,7 +145,12 @@ Each scenario includes:
 
 ## Outcome
 
-This project demonstrates the ability to diagnose infrastructure issues, apply structured troubleshooting methodologies, and handle multi-layer incidents using standard Linux tools.
+This project demonstrates the ability to:
+
+- Troubleshoot real-world infrastructure issues using a structured approach  
+- Analyze system behavior using logs, monitoring tools, and service validation  
+- Identify root causes in multi-layer incidents  
+- Restore services efficiently while validating system stability  
 
 ---
 
@@ -150,3 +158,4 @@ This project demonstrates the ability to diagnose infrastructure issues, apply s
 
 Akash K  
 Aspiring Infrastructure / NOC Analyst
+Actively building hands-on experience in Linux systems, monitoring, and incident response.
