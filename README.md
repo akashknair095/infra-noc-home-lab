@@ -157,5 +157,5 @@ This project demonstrates the ability to:
 ## Author
 
 Akash K  
-Aspiring Infrastructure / NOC Analyst
+Aspiring Infrastructure / NOC Analyst  
 Actively building hands-on experience in Linux systems, monitoring, and incident response.
