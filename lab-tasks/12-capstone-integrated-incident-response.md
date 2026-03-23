@@ -143,6 +143,19 @@ CPU load was intentionally introduced to simulate environmental noise. Despite i
 
 ---
 
+## Root Cause Differentiation
+
+### Reasoning
+High CPU utilization was observed from `yes` processes. However, `systemctl status nginx` confirmed the failure predated the CPU load and showed an `ExecStartPre` exit code — indicating startup failure during configuration validation, not resource exhaustion.
+
+The `journalctl` logs further confirmed the failure occurred at the pre-start phase, with no memory or CPU-related errors present. The CPU load was identified as environmental noise and eliminated as a contributing factor. Investigation was refocused on the configuration error as the sole root cause.
+
+### Conclusion
+- CPU spike → Environmental noise (unrelated to service failure)
+- nginx ExecStartPre failure → Root cause (invalid configuration directive)
+
+---
+
 ## Configuration Correction
 
 ### Command Executed
@@ -195,4 +208,4 @@ The nginx service was successfully restored and validated after resolving the co
 
 ## Conclusion
 
-This capstone lab simulated a real-world incident involving service failure and system noise. Through systematic investigation, the root cause was identified as a configuration error, not resource exhaustion. The issue was resolved and service availability was restored, demonstrating end-to-end NOC troubleshooting capability.
+This capstone lab simulated a real-world incident involving service failure and system noise. Through systematic investigation, the root cause was identified as a configuration error, not resource exhaustion. The CPU spike was actively triaged and eliminated as a red herring before focusing on the configuration fix. The issue was resolved and service availability was restored, demonstrating end-to-end NOC troubleshooting capability.
