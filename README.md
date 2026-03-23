@@ -1,5 +1,12 @@
 # Infra-NOC Home Lab
 
+> **12 incident scenarios** across CPU, memory, disk, network, and service layers  
+> **Capstone multi-fault incident** with structured root cause isolation  
+> **Full screenshot evidence** for every scenario  
+> **Tools:** `systemctl` · `journalctl` · `ss` · `ufw` · `nginx` · `top` · `curl` · `df` · `free` · `ip`
+
+---
+
 ## Project Overview
 
 This project simulates real-world Network Operations Center (NOC) scenarios using a Linux-based lab environment. It demonstrates hands-on troubleshooting, monitoring, and incident resolution across multiple system layers.
@@ -22,24 +29,17 @@ The objective is to build practical, job-ready skills in diagnosing infrastructu
 
 ## Lab Environment
 
-- Operating System: Ubuntu (Virtual Machine)
-- Platform: Oracle VirtualBox
-- Service: Nginx
+- **Operating System:** Ubuntu (Virtual Machine)
+- **Platform:** Oracle VirtualBox
+- **Service:** Nginx
 
 ### Tools Used
 
-- systemctl
-- journalctl
-- ss
-- curl
-- top, free
-- ufw
-- nginx -t
+`systemctl` `journalctl` `ss` `curl` `top` `free` `df` `du` `ip` `ping` `ufw` `nginx -t` `stress` `resolvectl`
 
 ---
-## Repository Structure
 
-The repository is organized into setup configuration, task-based lab exercises, and supporting assets:
+## Repository Structure
 
 ```
 infra-noc-home-lab/
@@ -67,41 +67,52 @@ infra-noc-home-lab/
 ## Lab Breakdown
 
 ### Day 1: System Health Baseline
-Established baseline metrics for CPU, memory, disk, and running services.
+
+Established baseline metrics for CPU, memory, disk, and running services using `top`, `free`, `df`, and `ps`. Captured reference state before any incident simulation.
 
 ### Day 2: Nginx Service Incident
-Simulated service failure and performed initial troubleshooting using system tools.
+
+Installed and validated the nginx service, simulated a service outage, and investigated service state using `systemctl`. Restored service availability and verified recovery.
 
 ### Day 3: CPU Spike Simulation
-Generated high CPU load and analyzed system behavior under stress.
+
+Generated high CPU load using stress processes and identified resource-intensive processes using `top`. Investigated root cause and restored system stability after load removal.
 
 ### Day 4: Disk Space Exhaustion
-Simulated disk full condition and performed cleanup and recovery.
 
-### Day 5: Log Analysis
-Investigated system logs to identify service and configuration issues.
+Simulated a disk-full condition by creating large files, investigated usage using `df` and `du`, and recovered disk capacity by identifying and removing test artifacts.
 
-### Day 6: Service Recovery
-Restored failed services using structured troubleshooting methodology.
+### Day 5: Memory Pressure Simulation
 
-### Day 7: Monitoring Basics
-Explored system monitoring tools and process-level visibility.
+Generated memory load using the `stress` tool, observed system behavior under pressure, and investigated memory consumption using `free` and `top`. Confirmed system recovery after load removal.
+
+### Day 6: Network Troubleshooting
+
+Simulated two network incidents — interface failure (disabled NIC, investigated with `ip`) and DNS resolution failure (modified DNS config, isolated using `resolvectl` and `ping`). Restored connectivity for both scenarios.
+
+### Day 7: Nginx Service Failure
+
+Simulated two nginx failure modes: service stopped (recovered via `systemctl`) and configuration syntax error (detected via `nginx -t`, investigated with `journalctl`, corrected and restarted). Validated availability after each recovery.
 
 ### Day 8: Port Conflict and Service Failure
-Simulated port binding conflict and resolved service startup failure.
+
+Simulated port binding conflict by occupying port 80 with a Python HTTP server. Identified the conflict using `ss`, resolved it by terminating the conflicting process, restarted nginx, and validated service availability.
 
 ### Day 9: Nginx Binding Misconfiguration
-Diagnosed accessibility issues caused by incorrect interface binding.
+
+Diagnosed an accessibility failure caused by nginx binding to an incorrect network interface. Identified the misconfiguration through config inspection and corrected the listening address to restore service access.
 
 ### Day 10: Configuration Syntax Failure
-Detected and resolved nginx configuration errors using validation and logs.
+
+Introduced an invalid nginx directive and detected the resulting startup failure using `nginx -t` and `journalctl`. Corrected the configuration syntax and validated successful service restoration.
 
 ### Day 11: Firewall Access Control
-Applied firewall rules and analyzed behavior under NAT limitations.
 
-### Day 12: Capstone – Integrated Incident Response and Monitoring
-Simulated a multi-layer incident involving service failure, configuration error, and CPU load. 
-Demonstrated root cause isolation by distinguishing between actual failure and environmental noise, followed by full service restoration.
+Applied and tested firewall rules using `ufw`. Analyzed traffic behavior under NAT limitations, validated rule enforcement, and confirmed expected access control outcomes.
+
+### Day 12: Capstone – Integrated Incident Response
+
+Simulated a multi-layer incident involving a service failure, nginx configuration error, and concurrent CPU load (noise). Performed structured triage to isolate the configuration failure as the true root cause — distinguishing it from the CPU noise — then restored full service availability and validated recovery.
 
 ---
 
@@ -109,13 +120,13 @@ Demonstrated root cause isolation by distinguishing between actual failure and e
 
 Each lab follows a structured troubleshooting approach:
 
-1. Baseline Verification  
-2. Incident Simulation  
-3. Failure Observation  
-4. Investigation (Logs and Validation)  
-5. Root Cause Identification  
-6. Resolution  
-7. Validation  
+1. Baseline Verification
+2. Incident Simulation
+3. Failure Observation
+4. Investigation (Logs and Validation)
+5. Root Cause Identification
+6. Resolution
+7. Validation
 
 ---
 
@@ -123,23 +134,23 @@ Each lab follows a structured troubleshooting approach:
 
 Each scenario includes:
 
-- Commands executed  
-- Output observations  
-- Screenshots as evidence  
-- Interpretation of findings  
-- Resolution steps  
+- Commands executed
+- Output observations
+- Screenshots as evidence
+- Interpretation of findings
+- Resolution steps
 
 ---
 
 ## Skills Demonstrated
 
-- System-level troubleshooting  
-- Service lifecycle management  
-- Log-based debugging  
-- Network diagnostics  
-- Firewall rule validation  
-- Performance analysis  
-- Structured incident response  
+- System-level troubleshooting
+- Service lifecycle management
+- Log-based debugging
+- Network diagnostics
+- Firewall rule validation
+- Performance analysis
+- Structured incident response
 
 ---
 
@@ -147,15 +158,15 @@ Each scenario includes:
 
 This project demonstrates the ability to:
 
-- Troubleshoot real-world infrastructure issues using a structured approach  
-- Analyze system behavior using logs, monitoring tools, and service validation  
-- Identify root causes in multi-layer incidents  
-- Restore services efficiently while validating system stability  
+- Troubleshoot real-world infrastructure issues using a structured approach
+- Analyze system behavior using logs, monitoring tools, and service validation
+- Identify root causes in multi-layer incidents with environmental noise
+- Restore services efficiently while validating system stability
 
 ---
 
 ## Author
 
-Akash K  
+**Akash K**  
 Aspiring Infrastructure / NOC Analyst  
 Actively building hands-on experience in Linux systems, monitoring, and incident response.
