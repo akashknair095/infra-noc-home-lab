@@ -1,4 +1,4 @@
-![Infra NOC Home Lab](noc-banner.svg)
+![Infra NOC Home Lab](assets/noc-banner.svg)
 
 # Infra-NOC Home Lab
 
