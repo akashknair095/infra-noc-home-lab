@@ -1,3 +1,5 @@
+![Infra NOC Home Lab](noc-banner.svg)
+
 # Infra-NOC Home Lab
 
 > **12 incident scenarios** across CPU, memory, disk, network, and service layers  
